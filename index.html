@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Házi feladat</title>
   <meta charset="utf-8">
@@ -7,41 +8,124 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <!-- <link rel="stylesheet" type="text/css" href="mystyle.css">-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
-  
+  <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>  
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script defer src="createPartner.js"></script>
+
 </head>
+
 <body>
 
- <div class="btn-group">
-  <button type="button" class="btn btn-primary">Raktár</button>
-  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+  <div class="btn-group">
+    <button type="button" class="btn btn-primary">Raktár</button>
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
     <span class="caret"></span>
   </button>
-  <ul class="dropdown-menu" role="menu">
-    <li><a href="#" onclick="window.location.href='raktar_megj.html'">Tételek megjelenítése</a></li>
-    <li><a href="#" onclick="window.location.href='raktar_letreh.html'">Tételek létrehozása</a></li>
-    <li><a href="#" onclick="window.location.href='raktar_szerk.html'">Tételek szerkesztése</a></li>
-    <li><a href="#" onclick="window.location.href='raktar_torl.html'">Tételek törlése</a></li>
-    <li><a href="#" onclick="window.location.href='raktar_elad.html'">Eladás</a></li>
-  </ul>
-</div>
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="#listItems" data-toggle="tab" id="listItemsToggle">Tételek megjelenítése</a></li>
+      <li><a href="#createItem" data-toggle="tab">Tételek létrehozása</a></li>
+      <li><a href="#">Tételek szerkesztése</a></li>
+      <li><a href="#">Tételek törlése</a></li>
+      <li><a href="#">Eladás</a></li>
+    </ul>
+  </div>
 
-<div class="btn-group">
-  <button type="button" class="btn btn-primary">Partner</button>
-  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+  <div class="btn-group">
+    <button type="button" class="btn btn-primary">Partner</button>
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
     <span class="caret"></span>
   </button>
-  <ul class="dropdown-menu" role="menu">
-    <li><a href="#" onclick="window.location.href='partner_megj.html'">Adatok megjelenítése</a></li>
-    <li><a href="#" onclick="window.location.href='partner_letreh.html'">Adatok létrehozása</a></li>
-    <li><a href="#" onclick="window.location.href='partner_szerk.html'">Adatok szerkesztése</a></li>
-    <li><a href="#" onclick="window.location.href='partner_torl.html'">Partner törlése</a></li>
-  
-  </ul>
-</div>
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="#">Adatok megjelenítése</a></li>
+      <li><a href="#createPartner" data-toggle="tab">Adatok létrehozása</a></li>
+      <li><a href="#">Adatok szerkesztése</a></li>
+      <li><a href="#">Partner törlése</a></li>
 
-<div class="btn-group">
-  <button type="button" class="btn btn-primary">Bizonylat</button>
-</div>
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button type="button" class="btn btn-primary">Bizonylat</button>
+  </div>
+
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade in active" id="home">Főoldal</div>
+    <div role="tabpanel" class="tab-pane fade" id="createItem">Cikk létrehozása
+      <form id="myForm">
+        <div class="form-group">
+          <label for="itemName">Cikk neve:</label>
+          <input type="text" class="form-control col-sm-6" id="itemName">
+        </div>
+        <div class="form-group">
+          <label for="itemQuantity">Mennyiség:</label>
+          <input type="number" class="form-control col-sm-6" id="itemQuantity">
+        </div>
+        <div class="form-group">
+          <label for="itemNetPrice">Nettó ár:</label>
+          <input type="number" class="form-control col-sm-6" id="itemNetPrice">
+        </div>
+        <div class="form-group">
+          <label for="itemVat">Áfa</label>
+          <select class="form-control" id="itemVat">
+              <option>5 %</option>
+              <option>18 %</option>
+              <option>27 %</option>
+          </select>
+        </div>
+        <br>
+        <button type="button" class="btn btn-primary" id="saveNewItem">Mentés</button>
+        <button type="button" class="btn btn-primary" id="dropItem">Elvetés</button>
+
+      </form>
+
+    </div>
+
+    <div role="tabpanel" class="tab-pane fade" id="createPartner">Partner létrehozása
+      <form id="myForm2">
+        <div class="form-group">
+          <label for="partnerName">Partner neve:</label>
+          <input type="text" class="form-control col-sm-6" id="partnerName">
+        </div>
+        <div class="form-group">
+          <label for="partnerAddress">Partner címe:</label>
+          <input type="text" class="form-control col-sm-6" id="partnerAddress">
+        </div>
+        <div class="form-group">
+          <label for="taxNumber">Adószáma:</label>
+          <input type="number" class="form-control col-sm-6" id="taxNumber">
+        </div>
+        <br>
+        <button type="button" class="btn btn-primary" id="saveNewPartner">Mentés</button>
+        <button type="button" class="btn btn-primary" id="dropPartner">Elvetés</button>
+
+      </form>
+
+    </div>
+
+    <div role="tabpanel" class="tab-pane fade" id="listItems">Tételek megjelenítése
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Név</th>
+              <th>Raktári mennyiség</th>
+              <th>Nettó ár</th>
+              <th>Áfa</th>
+              <th>Szerkesztés</th>
+              <th>Törlés</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTable">
+          </tbody>
+        </table>
+      </div>
+
+     
+      
+    </div>
+
+  </div>
 </body>
+
 </html>
