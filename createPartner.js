@@ -56,12 +56,12 @@ $('#listItemsToggle').on('show.bs.tab', function () {
             <td>${item._id}</td>
             <td>${item.name}</td>
             <td>${item.quantity}</td>
-            <td>${item.netPrice}</td>
+            <td>${item.netPrice} Ft</td>
             <td>${item.vat}</td>
-            <td><button type="button" class="btn btn-default">
+            <td><button type="button" class="btn btn-default" data-element="itemEdit" data-itemid="${item._id}">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
             </button></td>
-            <td><button type="button" class="btn btn-default">
+            <td><button type="button" class="btn btn-default" data-element="itemDelete">
                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
             </button></td>
         </tr>`
@@ -72,3 +72,56 @@ $('#listItemsToggle').on('show.bs.tab', function () {
     elem.setAttribute('id', 'itemsTable');
 });
 
+
+$('#itemsMainTable').on('click', '[data-element="itemEdit"]', function(e){
+    $('#myModal').modal('show');
+    var itemId = $(e.target).attr('data-itemid'),
+        itemName = items[itemId].name,
+        itemQuantity = items[itemId].quantity,
+        itemNetPrice = items[itemId].netPrice,
+        itemVat = items[itemId].vat;
+    $('#itemsName').val(itemName);
+    $('#itemsQuantity').val(itemQuantity);
+    $('#itemsNetPrice').val(itemNetPrice);
+    $('#itemsVat').val(itemVat);
+});
+
+$('#saveEditedItem').on('click', function () {
+    var itemName = $('#itemsName').val(),
+        itemQuantity = Number($('#itemsQuantity').val()),
+        itemNetPrice = Number($('#itemsNetPrice').val()),
+        itemVat = $('#itemsVat').val();
+
+    createElem(items, {
+        _id: autoIncrement++,
+        name: itemName,
+        quantity: itemQuantity,
+        netPrice: itemNetPrice,
+        vat: itemVat
+    });
+    document.getElementById('myForm').reset();
+});
+
+$('#listPartnersToggle').on('show.bs.tab', function () {
+    var elem = document.createElement('tbody');
+
+    _.each(partners, function (partner) {
+        $(elem).append(`
+        <tr>
+            <td>${partner._id}</td>
+            <td>${partner.name}</td>
+            <td>${partner.address}</td>
+            <td>${partner.taxNumber} Ft</td>
+            <td><button type="button" class="btn btn-default" id="partnerEdit">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+            </button></td>
+            <td><button type="button" class="btn btn-default" id="partnerDelete">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            </button></td>
+        </tr>`
+        );
+    });
+
+    $('#partnersTable').replaceWith(elem);
+    elem.setAttribute('id', 'partnersTable');
+});
