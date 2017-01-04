@@ -173,11 +173,29 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal" >Bezárás</button>
-          <button type="button" class="btn btn-primary" id="saveEditedItem">Mentés</button>
+          <button type="button" class="btn btn-primary" id="saveEditedItem" data-itemid="${item._id}">Mentés</button>
         </div>
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel2">Figyelmeztetés</h4>
+      </div>
+      <div class="modal-body">
+        <p> Biztosan törölni akarja? </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="yesDelete">Igen</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Nem</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 
 </html>

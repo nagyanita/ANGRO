@@ -2,11 +2,16 @@ var partners = {},
     items = {},
     sales = {},
     buys = {},
-    autoIncrement = 1;
+    autoIncrement = 1,
+    editingItemId;
 
 function createElem(col, newElemObj) {
     col[newElemObj._id] = newElemObj;
 }
+
+/*function (newElemObj){
+    newElemObj._id
+} */
 
 /*Fejléc menüpontok beragadó active class fix.*/
 $('.dropdown-menu li').on('click', function (e) {
@@ -52,17 +57,17 @@ $('#listItemsToggle').on('show.bs.tab', function () {
 
     _.each(items, function (item) {
         $(elem).append(`
-        <tr>
+        <tr id="rowId${item._id}">
             <td>${item._id}</td>
             <td>${item.name}</td>
             <td>${item.quantity}</td>
             <td>${item.netPrice} Ft</td>
             <td>${item.vat}</td>
             <td><button type="button" class="btn btn-default" data-element="itemEdit" data-itemid="${item._id}">
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true" data-itemid="${item._id}"></span>
             </button></td>
-            <td><button type="button" class="btn btn-default" data-element="itemDelete">
-                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            <td><button type="button" class="btn btn-default" data-element="itemDelete" data-itemid="${item._id}">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true" data-itemid="${item._id}"></span>
             </button></td>
         </tr>`
         );
@@ -73,7 +78,7 @@ $('#listItemsToggle').on('show.bs.tab', function () {
 });
 
 
-$('#itemsMainTable').on('click', '[data-element="itemEdit"]', function(e){
+$('#itemsMainTable').on('click', '[data-element="itemEdit"]', function (e) {
     $('#myModal').modal('show');
     var itemId = $(e.target).attr('data-itemid'),
         itemName = items[itemId].name,
@@ -84,22 +89,51 @@ $('#itemsMainTable').on('click', '[data-element="itemEdit"]', function(e){
     $('#itemsQuantity').val(itemQuantity);
     $('#itemsNetPrice').val(itemNetPrice);
     $('#itemsVat').val(itemVat);
+    editingItemId = itemId;
 });
 
 $('#saveEditedItem').on('click', function () {
-    var itemName = $('#itemsName').val(),
-        itemQuantity = Number($('#itemsQuantity').val()),
-        itemNetPrice = Number($('#itemsNetPrice').val()),
-        itemVat = $('#itemsVat').val();
+    var editedItemName = $('#itemsName').val(),
+        editedItemQuantity = Number($('#itemsQuantity').val()),
+        editedItemNetPrice = Number($('#itemsNetPrice').val()),
+        editedItemVat = $('#itemsVat').val();
 
     createElem(items, {
-        _id: autoIncrement++,
-        name: itemName,
-        quantity: itemQuantity,
-        netPrice: itemNetPrice,
-        vat: itemVat
+        _id: editingItemId,
+        name: editedItemName,
+        quantity: editedItemQuantity,
+        netPrice: editedItemNetPrice,
+        vat: editedItemVat
     });
     document.getElementById('myForm').reset();
+
+    var elem = document.createElement('tr'),
+        item = items[editingItemId];
+    $(elem).append(`
+            <td>${item._id}</td>
+            <td>${item.name}</td>
+            <td>${item.quantity}</td>
+            <td>${item.netPrice} Ft</td>
+            <td>${item.vat}</td>
+            <td><button type="button" class="btn btn-default" data-element="itemEdit" data-itemid="${item._id}">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true" data-itemid="${item._id}"></span>
+            </button></td>
+            <td><button type="button" class="btn btn-default" data-element="itemDelete data-itemid="${item._id}>
+                <span class="glyphicon glyphicon-trash" aria-hidden="true" data-itemid="${item._id}></span>
+            </button></td>`
+    );
+    $(`#rowId${item._id}`).replaceWith(elem);
+    elem.setAttribute('id', `rowId${item._id}`);
+    $('#myModal').modal('hide');
+});
+
+$('#itemsMainTable').on('click', '[data-element="itemDelete"]', function (e) {
+    $('#myModal2').modal('show');
+    $('#yesDelete').once('click', function () {
+        editingItemId = $(e.target).attr('data-itemid');
+        $(`#rowId${editingItemId}`).remove();
+    });
+    $('#myModal2').modal('hide');
 });
 
 $('#listPartnersToggle').on('show.bs.tab', function () {
@@ -125,3 +159,6 @@ $('#listPartnersToggle').on('show.bs.tab', function () {
     $('#partnersTable').replaceWith(elem);
     elem.setAttribute('id', 'partnersTable');
 });
+
+
+
