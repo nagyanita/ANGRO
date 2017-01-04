@@ -1,0 +1,20 @@
+{
+    "_id": 3,
+    "grossPrice": 9999999,
+    "total": 100000,
+    "items": [
+        {
+            "_id": 1,
+            "name": " ",
+            "quantity": 1,
+            "netPrice": 100.5555,
+            "vat": 27
+        }
+    ],
+    "partner": {
+        "_id": 2,
+        "name": " ",
+        "address": " ",
+        "taxNumber": 11111111111
+    }
+}
