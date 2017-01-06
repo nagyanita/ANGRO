@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "_id": 4,
     "grossPrice": 9999999,
@@ -11,4 +12,19 @@
         }
     ],
     "partnerId": 2
+=======
+{
+    "_id": 4,
+    "grossPrice": 9999999,
+    "total": 100000,
+    "items": [
+        {
+            "_id": 1,
+            "quantity": 1,
+            "netPrice": 100.5555,
+            "vat": 27
+        }
+    ],
+    "partnerId": 2
+>>>>>>> origin/master
 }
