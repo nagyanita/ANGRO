@@ -36,9 +36,6 @@
     <ul class="dropdown-menu" role="menu">
       <li><a href="#listPartner" data-toggle="tab" id="listPartnersToggle">Adatok megjelenítése</a></li>
       <li><a href="#createPartner" data-toggle="tab">Adatok létrehozása</a></li>
-      <li><a href="#">Adatok szerkesztése</a></li>
-      <li><a href="#">Partner törlése</a></li>
-
     </ul>
   </div>
 
@@ -129,6 +126,8 @@
               <th>Név</th>
               <th>Cím</th>
               <th>Adószám</th>
+              <th>Szerkesztés</th>
+              <th>Törlés</th>
             </tr>
           </thead>
           <tbody id="partnersTable">
@@ -172,8 +171,76 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal" >Bezárás</button>
-          <button type="button" class="btn btn-primary" id="saveEditedItem">Mentés</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Bezárás</button>
+          <button type="button" class="btn btn-primary" id="saveEditedItem" data-itemid="${item._id}">Mentés</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel2">Figyelmeztetés</h4>
+        </div>
+        <div class="modal-body">
+          <p> Biztosan törölni akarja? </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="yesDelete">Igen</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Nem</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel3">Szerkesztés</h4>
+        </div>
+        <div class="modal-body">
+          <form id="myForm4">
+            <div class="form-group">
+              <label for="itemName">Partner neve:</label>
+              <input type="text" class="form-control col-sm-6" id="partnersName">
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Partner címe:</label>
+              <input type="text" class="form-control col-sm-6" id="partnersAddress">
+            </div>
+            <div class="form-group">
+              <label for="itemNetPrice">Adószáma:</label>
+              <input type="number" class="form-control col-sm-6" id="partnersTaxNumber">
+            </div>
+            <br>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Bezárás</button>
+          <button type="button" class="btn btn-primary" id="saveEditedPartner" data-itemid="${item._id}">Mentés</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel4">Figyelmeztetés</h4>
+        </div>
+        <div class="modal-body">
+          <p> Biztosan törölni akarja? </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="yesDelPartner">Igen</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Nem</button>
         </div>
       </div>
     </div>
