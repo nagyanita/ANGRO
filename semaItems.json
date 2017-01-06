@@ -1,16 +1,7 @@
-<<<<<<< HEAD
 {
     "_id": 1,
     "name": " ",
     "quantity": 1,
     "netPrice": 100.5555,
     "vat": 27
-=======
-{
-    "_id": 1,
-    "name": " ",
-    "quantity": 1,
-    "netPrice": 100.5555,
-    "vat": 27
->>>>>>> origin/master
 }
