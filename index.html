@@ -6,11 +6,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <!-- <link rel="stylesheet" type="text/css" href="mystyle.css">-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script defer src="createPartner.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/idbwrapper/1.7.1/idbstore.min.js"></script>
+  <script defer src="globals.js"></script>
+  <script defer src="partners.js"></script>
+  <script defer src="items.js"></script>
+  <script defer src="database.js"></script>
+  <script defer src="invoices.js"></script>
+  <script defer src="bignumber.js"></script>
+  <script defer src="moment.js"></script>
+
 
 </head>
 
@@ -24,7 +31,7 @@
     <ul class="dropdown-menu" role="menu">
       <li><a href="#listItems" data-toggle="tab" id="listItemsToggle">Tételek megjelenítése</a></li>
       <li><a href="#createItem" data-toggle="tab">Tételek létrehozása</a></li>
-      <li><a href="#">Eladás</a></li>
+      <li><a href="#invoiceShow" data-toggle="tab" id="invoiceShowToggle">Eladás</a></li>
     </ul>
   </div>
 
@@ -41,12 +48,19 @@
 
   <div class="btn-group">
     <button type="button" class="btn btn-primary">Bizonylat</button>
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+  </button>
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="#sell" data-toggle="tab" id="sellInvoices">Eladási bizonylat</a></li>
+      <li><a href="#buy" data-toggle="tab" id="buyInvoices">Beszerzési bizonylat</a></li>
+    </ul>
   </div>
 
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane fade in active" id="home">Főoldal</div>
     <div role="tabpanel" class="tab-pane fade" id="createItem">Cikk létrehozása
-      <form id="myForm">
+      <form id="itemCreateForm">
         <div class="form-group">
           <label for="itemName">Cikk neve:</label>
           <input type="text" class="form-control col-sm-6" id="itemName">
@@ -62,9 +76,9 @@
         <div class="form-group">
           <label for="itemVat">Áfa:</label>
           <select class="form-control" id="itemVat">
-              <option>5 %</option>
-              <option>18 %</option>
-              <option>27 %</option>
+              <option>5</option>
+              <option>18</option>
+              <option>27</option>
           </select>
         </div>
         <br>
@@ -76,7 +90,7 @@
     </div>
 
     <div role="tabpanel" class="tab-pane fade" id="createPartner">Partner létrehozása
-      <form id="myForm2">
+      <form id="partnerCreateForm">
         <div class="form-group">
           <label for="partnerName">Partner neve:</label>
           <input type="text" class="form-control col-sm-6" id="partnerName">
@@ -136,115 +150,275 @@
       </div>
 
     </div>
-  </div>
 
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Szerkesztés</h4>
-        </div>
-        <div class="modal-body">
-          <form id="myForm3">
-            <div class="form-group">
-              <label for="itemName">Cikk neve:</label>
-              <input type="text" class="form-control col-sm-6" id="itemsName">
-            </div>
-            <div class="form-group">
-              <label for="itemQuantity">Mennyiség:</label>
-              <input type="number" class="form-control col-sm-6" id="itemsQuantity">
-            </div>
-            <div class="form-group">
-              <label for="itemNetPrice">Nettó ár:</label>
-              <input type="number" class="form-control col-sm-6" id="itemsNetPrice">
-            </div>
-            <div class="form-group">
-              <label for="itemVat">Áfa:</label>
-              <select class="form-control" id="itemsVat">
-              <option>5 %</option>
-              <option>18 %</option>
-              <option>27 %</option>
+    <div role="tabpanel" class="tab-pane fade" id="sell">Eladási bizonylat
+      <form id="sellForm">
+        <br><br> Válassza ki a partnert! <br>
+        <select class="form-control" name="partners" id="partnersSelect">
+          
+      </select>
+      </form>
+      <br>
+      <div class="form-group pull-right">
+        <input type="text" id="myInput" onkeyup="myFunction()" class="search form-control" placeholder="Keresés...">
+</div>
+<span class="counter pull-right"></span>
+<table class="table table-hover table-bordered results" id="sellItemsToggle">
+  <thead>
+    <tr>
+      <td>ID</td>
+      <td>Név</td>
+      <td>Raktári mennyiség</td>
+      <td>Nettó ár</td>
+      <td>Áfa</td>
+      <td>Bruttó ár</td>
+      <td>Mennyiség</td>
+      <td>Hozzáadás</td>
+    </tr>
+  </thead>
+  <tbody id="sellItemsTable">
+  </tbody>
+</table>
+
+<table class="table table-hover table-bordered results">
+  <tbody>
+    <tr>
+      <td width="50%"> Eladó:<br> Angro Kft. <br> 5600 Békéscsaba, Kétegyházi út 7. <br> Adószáma: 24291763-2-04</td>
+      <td width="50%" id="customerName"> Vevő:</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="table table-hover table-bordered results">
+  <thead>
+    <tr>
+      <td>ID</td>
+      <td>Név</td>
+      <td>Mennyiség</td>
+      <td>Nettó ár</td>
+      <td>Áfa</td>
+      <td>Bruttó ár</td>
+      <td>Törlés</td>
+    </tr>
+  </thead>
+  <tbody id="selectedItemsTable">
+  </tbody>
+</table>
+
+
+<table class="table table-hover table-bordered results">
+  <tbody>
+    <tr>
+      <td style="visibility:hidden">ID</td>
+<td style="visibility:hidden">Név</td>
+<td style="visibility:hidden">Raktári mennyiség</td>
+<td style="visibility:hidden">Nettó ár</td>
+<td style="visibility:hidden">Áfa</td>
+<td style="visibility:hidden">Bruttó ár</td>
+<td style="visibility:hidden">Mennyiség</td>
+<td>Végösszeg:</td>
+<td id="totalPrice"></td>
+</tr>
+</tbody>
+</table>
+
+<button type="button" class="btn pull-right btn-warning" id="saveInvoice">Számla tárolása</button>
+</div>
+
+<div role="tabpanel" class="tab-pane fade" id="invoiceShow">Eladási bizonylatok
+  <br><br>
+  <table class="table table-hover table-bordered results">
+    <thead>
+      <tr>
+        <td>ID</td>
+        <td>Partner adatok</td>
+        <td>Végösszeg</td>
+        <td>Dátum</td>
+        <td>Megjelenítés</td>
+      </tr>
+    </thead>
+    <tbody id="selectedInvoiceTable">
+    </tbody>
+  </table>
+</div>
+
+
+</div>
+
+<div class="modal fade" id="editingItems" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Szerkesztés</h4>
+      </div>
+      <div class="modal-body">
+        <form id="itemEditForm">
+          <div class="form-group">
+            <label for="itemName">Cikk neve:</label>
+            <input type="text" class="form-control col-sm-6" id="itemsName">
+          </div>
+          <div class="form-group">
+            <label for="itemQuantity">Mennyiség:</label>
+            <input type="number" class="form-control col-sm-6" id="itemsQuantity">
+          </div>
+          <div class="form-group">
+            <label for="itemNetPrice">Nettó ár:</label>
+            <input type="number" class="form-control col-sm-6" id="itemsNetPrice">
+          </div>
+          <div class="form-group">
+            <label for="itemVat">Áfa:</label>
+            <select class="form-control" id="itemsVat">
+              <option>5</option>
+              <option>18</option>
+              <option>27</option>
           </select>
-            </div>
-            <br>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Bezárás</button>
-          <button type="button" class="btn btn-primary" id="saveEditedItem" data-itemid="${item._id}">Mentés</button>
-        </div>
+          </div>
+          <br>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Bezárás</button>
+        <button type="button" class="btn btn-primary" id="saveEditedItem" data-itemid="${item._id}">Mentés</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel2">Figyelmeztetés</h4>
-        </div>
-        <div class="modal-body">
-          <p> Biztosan törölni akarja? </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="yesDelete">Igen</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Nem</button>
-        </div>
+<div class="modal fade" id="deleteItems" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel2">Figyelmeztetés</h4>
+      </div>
+      <div class="modal-body">
+        <p> Biztosan törölni akarja? </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="yesDelete">Igen</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Nem</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel3">Szerkesztés</h4>
-        </div>
-        <div class="modal-body">
-          <form id="myForm4">
-            <div class="form-group">
-              <label for="itemName">Partner neve:</label>
-              <input type="text" class="form-control col-sm-6" id="partnersName">
-            </div>
-            <div class="form-group">
-              <label for="itemQuantity">Partner címe:</label>
-              <input type="text" class="form-control col-sm-6" id="partnersAddress">
-            </div>
-            <div class="form-group">
-              <label for="itemNetPrice">Adószáma:</label>
-              <input type="number" class="form-control col-sm-6" id="partnersTaxNumber">
-            </div>
-            <br>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Bezárás</button>
-          <button type="button" class="btn btn-primary" id="saveEditedPartner" data-itemid="${item._id}">Mentés</button>
-        </div>
+<div class="modal fade" id="editingPartners" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel3">Szerkesztés</h4>
+      </div>
+      <div class="modal-body">
+        <form id="myForm4">
+          <div class="form-group">
+            <label for="itemName">Partner neve:</label>
+            <input type="text" class="form-control col-sm-6" id="partnersName">
+          </div>
+          <div class="form-group">
+            <label for="itemQuantity">Partner címe:</label>
+            <input type="text" class="form-control col-sm-6" id="partnersAddress">
+          </div>
+          <div class="form-group">
+            <label for="itemNetPrice">Adószáma:</label>
+            <input type="number" class="form-control col-sm-6" id="partnersTaxNumber">
+          </div>
+          <br>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Bezárás</button>
+        <button type="button" class="btn btn-primary" id="saveEditedPartner" data-itemid="${item._id}">Mentés</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="modal fade" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel4">Figyelmeztetés</h4>
-        </div>
-        <div class="modal-body">
-          <p> Biztosan törölni akarja? </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="yesDelPartner">Igen</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Nem</button>
-        </div>
+<div class="modal fade" id="deletePartners" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel4">Figyelmeztetés</h4>
+      </div>
+      <div class="modal-body">
+        <p> Biztosan törölni akarja? </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="yesDelPartner">Igen</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Nem</button>
       </div>
     </div>
   </div>
+</div>
+
+<div id="itemIsAlreadySelected" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Figyelmeztetés</h4>
+      </div>
+      <div class="modal-body">
+        <p>Ez a termék már hozzá van adva a bizonylathoz!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Bezárás</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal fade" id="invoiceDetailsShowModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel5">Számla részletei</h4>
+      </div>
+      <div class="modal-body">
+        <table class="table table-hover table-bordered results">
+          <tbody>
+            <tr>
+              <td width="50%"> Eladó:<br> Angro Kft. <br> 5600 Békéscsaba, Kétegyházi út 7. <br> Adószáma: 24291763-2-04</td>
+              <td width="50%" id="nameOfCustomer"> Vevő:</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="table table-hover table-bordered results" id="itemsDetails">
+          <thead>
+            <tr>
+              <td>ID</td>
+              <td>Név</td>
+              <td>Mennyiség</td>
+              <td>Nettó ár</td>
+              <td>Áfa</td>
+              <td>Bruttó ár</td>
+            </tr>
+          </thead>
+          <tbody id="itemsDetailsTbody">
+          </tbody>
+        </table>
+
+        <table class="table table-hover table-bordered results" id="dateAndTotal">
+          <thead>
+            <tr>
+             
+            </tr>
+          </thead>
+        </table>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" data-dismiss="modal" id="invoiceDetailsClose">Bezárás</button>
+</div>
+</div>
+</div>
+</div>
 </body>
 
 </html>
